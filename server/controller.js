@@ -54,5 +54,33 @@ module.exports = {
             res.status(200).send(dbRes[0]);
         })
         .catch(err => console.log(err));
+    },
+
+    getPendingAppointments: (req, res) => {
+        sequelize.query(`
+            SELECT *
+            FROM cc_appointments
+            WHERE approved = false
+            ORDER BY date DESC
+        `)
+        .then(dbRes => {
+            res.status(200).send(dbRes[0]);
+        })
+        .catch(err => console.log(err));
+    },
+
+    getPastAppointments: (req, res) => {
+        sequelize.query(`
+            SELECT cc_appointments.appt_id, cc_appointments.date, cc_appointments.service_type, cc_appointments.notes, cc_users.first_name, cc_users.last_name
+            FROM cc_appointments
+                JOIN cc_users
+                    ON cc_appointments.client_id = cc_users.user_id
+            WHERE approved = true AND completed = true
+            ORDER BY date DESC
+        `)
+        .then(dbRes => {
+            res.status(200).send(dbRes[0]);
+        })
+        .catch(err => console.log(err));
     }
 }
